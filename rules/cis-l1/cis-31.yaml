@@ -1,0 +1,19 @@
+id: "CIS-5.4"
+title: "Enable Security Update Installs"
+category: updates
+severity: high
+description: "Security updates must be installed automatically."
+rationale: "Prompt installation of security updates is critical for system protection."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool true"
+    sudo: true
+    description: "Enable automatic installation of critical security updates."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool false"

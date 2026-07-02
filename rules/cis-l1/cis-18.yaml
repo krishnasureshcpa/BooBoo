@@ -1,0 +1,19 @@
+id: "CIS-3.3"
+title: "Block All Incoming Connections"
+category: firewall
+severity: high
+description: "All incoming connections must be blocked by default."
+rationale: "Blocking all incoming connections by default prevents unauthorized access to services."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.alf blockall"
+remediation:
+    action: run_command
+    command: "/usr/libexec/ApplicationFirewall/socketfilterfw --setblockall on"
+    sudo: true
+    description: "Block all incoming connections except essential services."
+    rollbackCommand: "/usr/libexec/ApplicationFirewall/socketfilterfw --setblockall off"

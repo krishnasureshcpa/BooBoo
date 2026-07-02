@@ -1,0 +1,19 @@
+id: "CIS-2.2"
+title: "Configure Audit Flags"
+category: logging
+severity: high
+description: "Audit flags must be set to lo,ad,fd,ex,fm,-all."
+rationale: "Comprehensive audit flags ensure all critical events are logged for security monitoring."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "lo,ad,fd,ex,fm,-all"
+    op: contains
+    path: "/etc/security/audit_control"
+remediation:
+    action: run_command
+    command: "/usr/bin/sed -i '' 's/^flags:.*/flags: lo,ad,fd,ex,fm,-all/' /etc/security/audit_control"
+    sudo: true
+    description: "Set audit flags to record login/logout, administrative, file deletion, execution, and file modification events."
+    rollbackCommand: "/usr/bin/sed -i '' 's/^flags:.*/flags: lo,ad,-all/' /etc/security/audit_control"

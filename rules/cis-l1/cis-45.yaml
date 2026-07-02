@@ -1,0 +1,19 @@
+id: "CIS-8.1"
+title: "Enable Quarantine for Downloaded Files"
+category: application_security
+severity: high
+description: "The quarantine flag must be enabled for downloaded files."
+rationale: "File quarantine marks downloaded files for scanning by Gatekeeper and XProtect."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "com.apple.LaunchServices LSQuarantine"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.LaunchServices LSQuarantine -bool true"
+    sudo: true
+    description: "Enable quarantine flag for files downloaded from the internet."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.LaunchServices LSQuarantine -bool false"

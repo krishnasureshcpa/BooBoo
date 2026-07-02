@@ -1,0 +1,19 @@
+id: "CIS-3.2"
+title: "Enable Firewall Stealth Mode"
+category: firewall
+severity: medium
+description: "Firewall stealth mode must be enabled to ignore unsolicited traffic."
+rationale: "Stealth mode prevents the system from responding to probe requests, hiding it from scanners."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.alf stealthenabled"
+remediation:
+    action: run_command
+    command: "/usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode on"
+    sudo: true
+    description: "Enable stealth mode to drop unsolicited ICMP and TCP probe packets."
+    rollbackCommand: "/usr/libexec/ApplicationFirewall/socketfilterfw --setstealthmode off"

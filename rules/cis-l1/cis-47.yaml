@@ -1,0 +1,19 @@
+id: "CIS-8.3"
+title: "Disable Java Runtime"
+category: application_security
+severity: medium
+description: "The Java runtime environment must be disabled."
+rationale: "Java is a common vector for exploits and should be disabled when not explicitly required."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "/Library/Preferences/com.oracle.java.Java.plist"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.oracle.java.Java JavaEnabled -bool false"
+    sudo: true
+    description: "Disable Java runtime to reduce attack surface."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.oracle.java.Java JavaEnabled -bool true"

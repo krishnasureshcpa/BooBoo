@@ -1,0 +1,19 @@
+id: "CIS-6.5"
+title: "Disable Internet Sharing"
+category: sharing
+severity: medium
+description: "Internet sharing must be disabled."
+rationale: "Internet sharing turns the system into a router and should be disabled to prevent unauthorized network bridging."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "/Library/Preferences/SystemConfiguration/com.apple.nat NATEnabled"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/SystemConfiguration/com.apple.nat NATEnabled -bool false"
+    sudo: true
+    description: "Disable internet sharing (NAT) to prevent the system from routing traffic."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/SystemConfiguration/com.apple.nat NATEnabled -bool true"

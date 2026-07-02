@@ -1,0 +1,19 @@
+id: "CIS-4.3"
+title: "Disable Automatic Login"
+category: encryption
+severity: high
+description: "Automatic login must be disabled."
+rationale: "Automatic login bypasses authentication and allows anyone to access the system."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "/Library/Preferences/com.apple.loginwindow autoLoginUser"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null; /usr/sbin/sysadminctl -autologin off"
+    sudo: true
+    description: "Disable automatic login to require authentication at boot."
+    rollbackCommand: "/usr/sbin/sysadminctl -autologin on -fullUserName <username> -password <password>"

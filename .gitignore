@@ -1,0 +1,52 @@
+# Xcode
+*.xcuserdata
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.resolved
+*.xcodeproj/project.xcworkspace/
+
+# Build artifacts
+build/
+release/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+Thumbs.db
+*.app
+
+# Secrets
+.env
+*.p12
+*.pem
+*.mobileprovision
+
+# Logs
+*.log
+logs/
+
+# Generated
+*.generated.swift
+
+# Research / planning (not part of source)
+analysis/
+plan/
+privacy-repos/

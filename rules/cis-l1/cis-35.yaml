@@ -1,0 +1,19 @@
+id: "CIS-6.3"
+title: "Disable Screen Sharing"
+category: sharing
+severity: medium
+description: "Screen sharing must be disabled."
+rationale: "Screen sharing allows remote viewing and control of the desktop and should be disabled when not required."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/com.apple.screensharing.plist"
+remediation:
+    action: run_command
+    command: "/bin/launchctl disable system/com.apple.screensharing"
+    sudo: true
+    description: "Disable the screen sharing service."
+    rollbackCommand: "/bin/launchctl enable system/com.apple.screensharing"

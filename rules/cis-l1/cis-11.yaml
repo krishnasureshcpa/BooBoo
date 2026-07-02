@@ -1,0 +1,19 @@
+id: "CIS-2.1"
+title: "Enable Security Auditing"
+category: logging
+severity: high
+description: "Security auditing must be enabled to record security-relevant events."
+rationale: "Audit logs provide necessary records for incident response and compliance."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "com.apple.auditd"
+    op: contains
+    path: "/System/Library/LaunchDaemons/com.apple.auditd.plist"
+remediation:
+    action: run_command
+    command: "/bin/launchctl load -w /System/Library/LaunchDaemons/com.apple.auditd.plist"
+    sudo: true
+    description: "Enable the audit daemon to start at boot and record security events."
+    rollbackCommand: "/bin/launchctl unload -w /System/Library/LaunchDaemons/com.apple.auditd.plist"

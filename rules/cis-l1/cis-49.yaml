@@ -1,0 +1,19 @@
+id: "CIS-8.5"
+title: "Disable Adobe Reader Auto-Update"
+category: application_security
+severity: low
+description: "Adobe Reader automatic updates must be disabled in managed environments."
+rationale: "Adobe Reader auto-update can bypass managed software update policies."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "com.adobe.Reader AutoUpdateEnabled"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write com.adobe.Reader AutoUpdateEnabled -bool false"
+    sudo: false
+    description: "Disable automatic updates in Adobe Reader."
+    rollbackCommand: "/usr/bin/defaults write com.adobe.Reader AutoUpdateEnabled -bool true"

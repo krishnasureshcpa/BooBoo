@@ -1,0 +1,19 @@
+id: "CIS-4.4"
+title: "Require Password After Sleep"
+category: encryption
+severity: high
+description: "A password must be required immediately after the system wakes from sleep."
+rationale: "Requiring a password after sleep prevents unauthorized access to an unattended system."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "60"
+    op: less_than_or_equal
+    path: "/Library/Preferences/com.apple.screensaver askForPasswordDelay"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.screensaver askForPasswordDelay -int 0"
+    sudo: true
+    description: "Require password immediately after sleep or screen saver begins."
+    rollbackCommand: "/usr/bin/defaults delete /Library/Preferences/com.apple.screensaver askForPasswordDelay"

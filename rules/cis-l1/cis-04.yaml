@@ -1,0 +1,19 @@
+id: "CIS-1.4"
+title: "Disable Guest Account"
+category: authentication
+severity: high
+description: "The guest account must be disabled."
+rationale: "The guest account provides unauthenticated access to the system and should be disabled."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "0"
+    op: equals
+    path: "/Local/Default/Groups/guest"
+remediation:
+    action: run_command
+    command: "/usr/sbin/dscl . -delete /Users/Guest 2>/dev/null; /usr/sbin/dscl . -create /Users/Guest AuthenticationAuthority ''; /usr/sbin/dscl . -create /Users/Guest IsDisabled 1"
+    sudo: true
+    description: "Disable the guest account and prevent guest login."
+    rollbackCommand: "/usr/sbin/dscl . -create /Users/Guest AuthenticationAuthority ';ShadowHash;HASHLIST:<SALTED-SHA512>'; /usr/sbin/dscl . -delete /Users/Guest IsDisabled"

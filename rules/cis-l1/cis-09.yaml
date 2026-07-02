@@ -1,0 +1,19 @@
+id: "CIS-1.9"
+title: "Limit Admin Accounts"
+category: authorization
+severity: medium
+description: "Only authorized users should be members of the admin group."
+rationale: "Unnecessary admin accounts increase the attack surface for privilege escalation."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "1"
+    op: less_than_or_equal
+    path: "/Local/Default/Groups/admin"
+remediation:
+    action: manual
+    command: "/usr/sbin/dseditgroup -o checkmember -u admin -p <password>"
+    sudo: true
+    description: "Review admin group membership and remove unauthorized users. Expected admin count is 1."
+    rollbackCommand: "/usr/sbin/dseditgroup -o edit -a <username> -t user admin"

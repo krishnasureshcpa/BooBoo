@@ -1,0 +1,19 @@
+id: "CIS-4.1"
+title: "Enable FileVault"
+category: encryption
+severity: high
+description: "FileVault full-disk encryption must be enabled."
+rationale: "Full-disk encryption protects data at rest from unauthorized access if the device is lost or stolen."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "FileVault is On."
+    op: contains
+    path: "/usr/bin/fdesetup status"
+remediation:
+    action: run_command
+    command: "/usr/bin/fdesetup enable -defer /Library/Preferences/com.apple.fdesetup.plist"
+    sudo: true
+    description: "Enable FileVault full-disk encryption. A recovery key will be generated."
+    rollbackCommand: "/usr/bin/fdesetup disable"

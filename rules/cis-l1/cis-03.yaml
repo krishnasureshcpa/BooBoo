@@ -1,0 +1,19 @@
+id: "CIS-1.3"
+title: "Enable Account Lockout"
+category: authentication
+severity: high
+description: "Account lockout must be enabled after 5 failed login attempts."
+rationale: "Account lockout prevents brute-force password guessing attacks."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: password
+check:
+    value: "5"
+    op: greater_than_or_equal
+    path: "/usr/bin/pwpolicy getaccountpolicies"
+remediation:
+    action: run_command
+    command: "/usr/bin/pwpolicy setaccountpolicies --max-failed-logins 5"
+    sudo: true
+    description: "Enable account lockout after 5 failed login attempts. Lockout duration is 15 minutes."
+    rollbackCommand: "/usr/bin/pwpolicy setaccountpolicies --max-failed-logins 0"

@@ -1,0 +1,19 @@
+id: "CIS-5.2"
+title: "Enable App Store Updates"
+category: updates
+severity: medium
+description: "App Store application updates must be installed automatically."
+rationale: "App Store updates include critical security patches for installed applications."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.commerce AutoUpdate"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool true"
+    sudo: true
+    description: "Enable automatic installation of App Store application updates."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool false"

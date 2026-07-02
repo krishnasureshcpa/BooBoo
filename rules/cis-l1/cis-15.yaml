@@ -1,0 +1,19 @@
+id: "CIS-2.5"
+title: "Enable Firewall Log"
+category: logging
+severity: medium
+description: "The application firewall log must be enabled and persisted."
+rationale: "Firewall logs record blocked connection attempts and help identify network threats."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.alf"
+remediation:
+    action: run_command
+    command: "/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on"
+    sudo: true
+    description: "Enable the application firewall logging to record blocked and allowed connections."
+    rollbackCommand: "/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode off"

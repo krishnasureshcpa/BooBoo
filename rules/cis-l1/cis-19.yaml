@@ -1,0 +1,19 @@
+id: "CIS-3.4"
+title: "Enable Signed App Auto-Allow"
+category: firewall
+severity: medium
+description: "Allow signed built-in applications to automatically receive incoming connections."
+rationale: "Signed software from Apple is trusted and should not require manual firewall approval."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.alf allowsignedenabled"
+remediation:
+    action: run_command
+    command: "/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on"
+    sudo: true
+    description: "Allow signed built-in applications to automatically receive incoming connections."
+    rollbackCommand: "/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off"

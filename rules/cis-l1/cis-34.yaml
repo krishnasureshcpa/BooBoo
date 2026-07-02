@@ -1,0 +1,19 @@
+id: "CIS-6.2"
+title: "Disable Remote Management (ARD)"
+category: sharing
+severity: high
+description: "Apple Remote Desktop remote management must be disabled."
+rationale: "Remote management provides full control of the system and should be disabled when not in use."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/com.apple.RemoteDesktop.plist"
+remediation:
+    action: run_command
+    command: "/usr/sbin/ARD -stop; /usr/bin/killall ARDAgent 2>/dev/null; /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -stop"
+    sudo: true
+    description: "Disable Apple Remote Desktop remote management."
+    rollbackCommand: "/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -on"

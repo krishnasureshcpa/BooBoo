@@ -1,0 +1,19 @@
+id: "CIS-3.7"
+title: "Disable Remote Apple Events"
+category: firewall
+severity: medium
+description: "Remote Apple Events must be disabled."
+rationale: "Remote Apple Events allow remote control of applications and should be disabled when not needed."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/com.apple.AEServer.plist"
+remediation:
+    action: run_command
+    command: "/usr/sbin/systemsetup -setremoteappleevents off"
+    sudo: true
+    description: "Disable Remote Apple Events to prevent remote application control."
+    rollbackCommand: "/usr/sbin/systemsetup -setremoteappleevents on"

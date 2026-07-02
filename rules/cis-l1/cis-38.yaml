@@ -1,0 +1,19 @@
+id: "CIS-7.1"
+title: "Enable System Integrity Protection"
+category: system_hardening
+severity: high
+description: "System Integrity Protection must be enabled."
+rationale: "SIP protects system files and prevents unauthorized modifications to the OS."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "enabled"
+    op: contains
+    path: "/usr/bin/csrutil status"
+remediation:
+    action: run_command
+    command: "/usr/bin/csrutil enable"
+    sudo: true
+    description: "Enable System Integrity Protection from Recovery HD."
+    rollbackCommand: "/usr/bin/csrutil disable"

@@ -1,0 +1,19 @@
+id: "CIS-1.1"
+title: "Set Password Minimum Length"
+category: authentication
+severity: high
+description: "Minimum password length must be set to 15 characters."
+rationale: "Short passwords are vulnerable to brute-force attacks."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: password
+check:
+    value: "15"
+    op: greater_than_or_equal
+    path: "/usr/bin/pwpolicy getaccountpolicies"
+remediation:
+    action: run_command
+    command: "/usr/bin/pwpolicy setaccountpolicies --min-length 15"
+    sudo: true
+    description: "Set minimum password length to 15 characters. Users must change passwords at next login."
+    rollbackCommand: "/usr/bin/pwpolicy setaccountpolicies --min-length 0"

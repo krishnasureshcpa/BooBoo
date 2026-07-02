@@ -1,0 +1,19 @@
+id: "CIS-4.5"
+title: "Enable Screen Lock Timeout"
+category: encryption
+severity: medium
+description: "The screen must lock after no more than 5 minutes of inactivity."
+rationale: "A short screen lock timeout reduces the window of opportunity for unauthorized access."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "300"
+    op: less_than_or_equal
+    path: "/Library/Preferences/com.apple.screensaver idleTime"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.screensaver idleTime -int 300"
+    sudo: true
+    description: "Set screen lock timeout to 5 minutes (300 seconds)."
+    rollbackCommand: "/usr/bin/defaults delete /Library/Preferences/com.apple.screensaver idleTime"

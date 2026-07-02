@@ -1,0 +1,19 @@
+id: "CIS-1.8"
+title: "Secure Home Folders Permissions"
+category: authorization
+severity: high
+description: "User home folders must have permissions set to 700 or less permissive."
+rationale: "Home folders with permissive access allow other users to view private data."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "700"
+    op: less_than_or_equal
+    path: "/Users/*"
+remediation:
+    action: run_command
+    command: "for d in /Users/*/; do /bin/chmod 700 \"$d\"; done"
+    sudo: true
+    description: "Set home folder permissions to 700 for all users."
+    rollbackCommand: "for d in /Users/*/; do /bin/chmod 755 \"$d\"; done"

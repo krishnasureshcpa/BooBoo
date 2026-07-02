@@ -1,0 +1,19 @@
+id: "CIS-5.5"
+title: "Disable Beta Software Updates"
+category: updates
+severity: low
+description: "Beta software updates must be disabled."
+rationale: "Beta updates may contain unstable features that could compromise system security."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "/Library/Preferences/com.apple.SoftwareUpdate AllowPreReleaseInstallation"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate AllowPreReleaseInstallation -bool false"
+    sudo: true
+    description: "Disable installation of beta software updates."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate AllowPreReleaseInstallation -bool true"

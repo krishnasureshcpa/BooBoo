@@ -1,0 +1,19 @@
+id: "CIS-2.3"
+title: "Enable Install Log"
+category: logging
+severity: medium
+description: "The install log must be enabled to record software installation events."
+rationale: "Install logs track software changes and help identify unauthorized software."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "install"
+    op: equals
+    path: "/var/log/install.log"
+remediation:
+    action: run_command
+    command: "/usr/bin/touch /var/log/install.log; /usr/sbin/chmod 640 /var/log/install.log"
+    sudo: true
+    description: "Enable logging of software installations to /var/log/install.log."
+    rollbackCommand: "rm /var/log/install.log"

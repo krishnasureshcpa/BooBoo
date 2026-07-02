@@ -1,0 +1,19 @@
+id: "CIS-1.7"
+title: "Enable Sudo Timestamp"
+category: authorization
+severity: medium
+description: "Sudo must be configured with a timestamp timeout of no more than 5 minutes."
+rationale: "Limiting the sudo credential cache duration reduces the window for unauthorized use."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "timestamp_timeout"
+    op: contains
+    path: "/etc/sudoers"
+remediation:
+    action: run_command
+    command: "echo 'Defaults timestamp_timeout=5' | /usr/bin/tee /etc/sudoers.d/timestamp"
+    sudo: true
+    description: "Set sudo timestamp timeout to 5 minutes."
+    rollbackCommand: "rm -f /etc/sudoers.d/timestamp"

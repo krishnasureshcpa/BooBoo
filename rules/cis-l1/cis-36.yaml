@@ -1,0 +1,19 @@
+id: "CIS-6.4"
+title: "Disable File Sharing"
+category: sharing
+severity: medium
+description: "File sharing services must be disabled."
+rationale: "File sharing exposes system files to the network and should be disabled when not required."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/com.apple.smbd.plist"
+remediation:
+    action: run_command
+    command: "/bin/launchctl disable system/com.apple.smbd"
+    sudo: true
+    description: "Disable SMB file sharing services."
+    rollbackCommand: "/bin/launchctl enable system/com.apple.smbd"

@@ -1,0 +1,19 @@
+id: "CIS-7.4"
+title: "Disable Automatic Login for Console"
+category: system_hardening
+severity: high
+description: "Automatic console login must be disabled."
+rationale: "Automatic login bypasses the login window and should be disabled for all users."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "/Library/Preferences/com.apple.loginwindow autoLoginUser"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults delete /Library/Preferences/com.apple.loginwindow autoLoginUser 2>/dev/null; /usr/sbin/sysadminctl -autologin off"
+    sudo: true
+    description: "Disable automatic console login to force authentication at the login window."
+    rollbackCommand: "/usr/sbin/sysadminctl -autologin on -fullUserName <username> -password <password>"

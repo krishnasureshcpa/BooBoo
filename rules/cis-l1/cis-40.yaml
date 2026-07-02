@@ -1,0 +1,19 @@
+id: "CIS-7.3"
+title: "Enable Library Validation"
+category: system_hardening
+severity: medium
+description: "Library validation must be enforced to prevent code injection."
+rationale: "Library validation ensures only signed and trusted libraries are loaded into processes."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/usr/bin/nvram boot-args"
+remediation:
+    action: run_command
+    command: "/usr/sbin/nvram boot-args='' 2>/dev/null; /usr/bin/csrutil enable --without amfi"
+    sudo: true
+    description: "Enable library validation to prevent untrusted code injection. Requires reboot."
+    rollbackCommand: "/usr/sbin/nvram boot-args='amfi_get_out_of_my_way=1'"

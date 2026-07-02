@@ -1,0 +1,19 @@
+id: "CIS-8.2"
+title: "Enable XProtect"
+category: application_security
+severity: high
+description: "XProtect malware detection must be enabled."
+rationale: "XProtect provides built-in malware detection and prevention on macOS."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.security XProtectEnabled"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.security XProtectEnabled -bool true"
+    sudo: true
+    description: "Enable XProtect malware detection and prevention."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.security XProtectEnabled -bool false"

@@ -1,0 +1,19 @@
+id: "CIS-7.2"
+title: "Enable Gatekeeper"
+category: system_hardening
+severity: high
+description: "Gatekeeper must be enabled to allow only trusted application downloads."
+rationale: "Gatekeeper prevents execution of untrusted software downloaded from the internet."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "enable"
+    op: contains
+    path: "/usr/sbin/spctl --status"
+remediation:
+    action: run_command
+    command: "/usr/sbin/spctl --master-enable"
+    sudo: true
+    description: "Enable Gatekeeper to require downloaded applications to be signed and notarized."
+    rollbackCommand: "/usr/sbin/spctl --master-disable"

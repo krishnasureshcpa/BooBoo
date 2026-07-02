@@ -1,0 +1,19 @@
+id: "CIS-2.4"
+title: "Enable Main Log"
+category: logging
+severity: medium
+description: "The system main log must be enabled for system-level event recording."
+rationale: "System logs contain essential information for troubleshooting and security analysis."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "asl"
+    op: equals
+    path: "/var/log/system.log"
+remediation:
+    action: run_command
+    command: "/usr/bin/touch /var/log/system.log; /usr/sbin/chmod 640 /var/log/system.log; /bin/launchctl load -w /System/Library/LaunchDaemons/com.apple.syslogd.plist"
+    sudo: true
+    description: "Enable system logging to /var/log/system.log."
+    rollbackCommand: "/bin/launchctl unload -w /System/Library/LaunchDaemons/com.apple.syslogd.plist"

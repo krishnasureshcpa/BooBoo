@@ -1,0 +1,19 @@
+id: "CIS-6.1"
+title: "Disable Remote Login (SSH)"
+category: sharing
+severity: high
+description: "SSH remote login must be disabled."
+rationale: "Remote login services should be disabled when not required to reduce attack surface."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/ssh.plist"
+remediation:
+    action: run_command
+    command: "/usr/sbin/systemsetup -f -setremotelogin off"
+    sudo: true
+    description: "Disable SSH remote login to prevent unauthorized remote access."
+    rollbackCommand: "/usr/sbin/systemsetup -f -setremotelogin on"

@@ -1,0 +1,19 @@
+id: "CIS-4.2"
+title: "Enable FileVault Key Escrow"
+category: encryption
+severity: medium
+description: "FileVault recovery keys must be escrowed to institutional key management."
+rationale: "Key escrow ensures that encrypted data can be recovered when users forget their passwords."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.fdesetup.plist"
+remediation:
+    action: run_command
+    command: "/usr/bin/fdesetup changerecovery -personal -key /Library/Preferences/com.apple.fdesetup.plist -outputplist /Library/Preferences/com.apple.fdesetup.plist"
+    sudo: true
+    description: "Escrow FileVault recovery key to institutional management."
+    rollbackCommand: "/usr/bin/fdesetup changerecovery -personal"

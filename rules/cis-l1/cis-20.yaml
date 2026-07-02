@@ -1,0 +1,19 @@
+id: "CIS-3.5"
+title: "Enable Firewall Logging"
+category: firewall
+severity: low
+description: "Firewall logging must be enabled to record network events."
+rationale: "Logging firewall activity provides visibility into network connection attempts."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "on"
+    op: contains
+    path: "/Library/Preferences/com.apple.alf loggingenabled"
+remediation:
+    action: run_command
+    command: "/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on; /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingopt detail"
+    sudo: true
+    description: "Enable detailed firewall logging to /var/log/appfirewall.log."
+    rollbackCommand: "/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode off"

@@ -1,0 +1,19 @@
+id: "CIS-3.6"
+title: "Disable Printer Sharing"
+category: firewall
+severity: low
+description: "Printer sharing must be disabled."
+rationale: "Disabling unused services reduces the attack surface of the system."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/com.apple.print.host.plist"
+remediation:
+    action: run_command
+    command: "/usr/sbin/cupsctl --no-share-printers"
+    sudo: true
+    description: "Disable printer sharing to prevent unauthorized network printing."
+    rollbackCommand: "/usr/sbin/cupsctl --share-printers"

@@ -1,0 +1,19 @@
+id: "CIS-7.7"
+title: "Disable Guest in Safari"
+category: system_hardening
+severity: low
+description: "Guest browsing in Safari must be disabled."
+rationale: "Guest browsing leaves no history and may be used to bypass content restrictions."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "0"
+    op: equals
+    path: "com.apple.safari GuestEnabled"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write com.apple.Safari GuestEnabled -bool false"
+    sudo: false
+    description: "Disable guest browsing in Safari."
+    rollbackCommand: "/usr/bin/defaults write com.apple.Safari GuestEnabled -bool true"

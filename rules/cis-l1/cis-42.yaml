@@ -1,0 +1,19 @@
+id: "CIS-7.5"
+title: "Enable Secure Keyboard Entry in Terminal"
+category: system_hardening
+severity: low
+description: "Secure keyboard entry must be enabled in Terminal.app."
+rationale: "Secure keyboard entry prevents other applications from logging keystrokes in Terminal."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "com.apple.Terminal SecureKeyboardEntry"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write com.apple.Terminal SecureKeyboardEntry -bool true"
+    sudo: false
+    description: "Enable secure keyboard entry in Terminal to prevent keylogging."
+    rollbackCommand: "/usr/bin/defaults write com.apple.Terminal SecureKeyboardEntry -bool false"

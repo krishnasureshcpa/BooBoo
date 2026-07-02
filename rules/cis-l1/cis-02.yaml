@@ -1,0 +1,19 @@
+id: "CIS-1.2"
+title: "Enable Password History"
+category: authentication
+severity: high
+description: "Password history must be set to remember at least 15 previous passwords."
+rationale: "Reusing recent passwords reduces the effectiveness of password policies."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: password
+check:
+    value: "15"
+    op: greater_than_or_equal
+    path: "/usr/bin/pwpolicy getaccountpolicies"
+remediation:
+    action: run_command
+    command: "/usr/bin/pwpolicy setaccountpolicies --history 15"
+    sudo: true
+    description: "Set password history to remember 15 previous passwords."
+    rollbackCommand: "/usr/bin/pwpolicy setaccountpolicies --history 0"

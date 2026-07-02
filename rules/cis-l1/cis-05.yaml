@@ -1,0 +1,19 @@
+id: "CIS-1.5"
+title: "Disable Guest Account File Sharing"
+category: authentication
+severity: medium
+description: "Guest access to shared files must be disabled."
+rationale: "Guests should not be able to access shared folders or files on the system."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: sharing
+check:
+    value: "0"
+    op: equals
+    path: "/usr/bin/sysadminctl -guestAccess status"
+remediation:
+    action: run_command
+    command: "/usr/sbin/sysadminctl -guestAccess off"
+    sudo: true
+    description: "Disable guest access to shared files and folders."
+    rollbackCommand: "/usr/sbin/sysadminctl -guestAccess on"

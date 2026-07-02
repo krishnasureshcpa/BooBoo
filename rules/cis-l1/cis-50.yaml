@@ -1,0 +1,19 @@
+id: "CIS-8.6"
+title: "Limit NFS Daemon"
+category: application_security
+severity: medium
+description: "The NFS daemon must be disabled or restricted to local network only."
+rationale: "NFS exports filesystems over the network and should be disabled when not required."
+frameworks: ["CIS"]
+platforms: ["macOS 14+"]
+probe: launch
+check:
+    value: "0"
+    op: equals
+    path: "/System/Library/LaunchDaemons/com.apple.nfsd.plist"
+remediation:
+    action: run_command
+    command: "/bin/launchctl disable system/com.apple.nfsd"
+    sudo: true
+    description: "Disable the NFS daemon to prevent network filesystem exports."
+    rollbackCommand: "/bin/launchctl enable system/com.apple.nfsd"

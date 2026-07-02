@@ -1,0 +1,19 @@
+id: "CIS-3.1"
+title: "Enable Firewall"
+category: firewall
+severity: high
+description: "The macOS application firewall must be enabled."
+rationale: "The firewall protects the system from unauthorized network access."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.alf globalstate"
+remediation:
+    action: run_command
+    command: "/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on"
+    sudo: true
+    description: "Enable the application firewall to block unauthorized network connections."
+    rollbackCommand: "/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off"

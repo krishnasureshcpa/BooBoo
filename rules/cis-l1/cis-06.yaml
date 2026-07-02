@@ -1,0 +1,19 @@
+id: "CIS-1.6"
+title: "Limit Sudo to Admin Group"
+category: authorization
+severity: high
+description: "Only members of the admin group should be permitted to use sudo."
+rationale: "Restricting sudo access to the admin group prevents unauthorized privilege escalation."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "%admin ALL=(ALL) ALL"
+    op: contains
+    path: "/etc/sudoers"
+remediation:
+    action: run_command
+    command: "/usr/sbin/visudo -c && echo '%admin ALL=(ALL) ALL' | /usr/bin/tee -a /etc/sudoers.d/admin"
+    sudo: true
+    description: "Configure sudo to only allow members of the admin group."
+    rollbackCommand: "/usr/bin/sed -i '' '/%admin ALL=(ALL) ALL/d' /etc/sudoers.d/admin 2>/dev/null; rm -f /etc/sudoers.d/admin"

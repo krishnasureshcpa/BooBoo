@@ -1,0 +1,19 @@
+id: "CIS-1.10"
+title: "Disable Root Login"
+category: authorization
+severity: high
+description: "Root login via SSH and console must be disabled."
+rationale: "Direct root login bypasses audit trails and allows unrestricted access."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: sharing
+check:
+    value: "PermitRootLogin no"
+    op: contains
+    path: "/etc/ssh/sshd_config"
+remediation:
+    action: run_command
+    command: "/usr/bin/sed -i '' 's/^#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config; /usr/bin/sed -i '' 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config; /usr/sbin/dsenableroot -d"
+    sudo: true
+    description: "Disable root login over SSH and disable the root user account."
+    rollbackCommand: "/usr/sbin/dsenableroot"

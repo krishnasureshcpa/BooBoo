@@ -1,0 +1,19 @@
+id: "CIS-5.3"
+title: "Enable System Data File Updates"
+category: updates
+severity: high
+description: "Automatic updates for system data files must be enabled."
+rationale: "System data files include security definitions and threat intelligence."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.SoftwareUpdate ConfigDataInstall"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate ConfigDataInstall -bool true"
+    sudo: true
+    description: "Enable automatic installation of system data file updates and security definitions."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate ConfigDataInstall -bool false"

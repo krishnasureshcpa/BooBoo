@@ -1,0 +1,19 @@
+id: "CIS-5.1"
+title: "Enable Automatic Updates"
+category: updates
+severity: high
+description: "Automatic software updates must be enabled."
+rationale: "Regular updates ensure security patches are applied promptly."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "/Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true"
+    sudo: true
+    description: "Enable automatic checking for software updates."
+    rollbackCommand: "/usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false"

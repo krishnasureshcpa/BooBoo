@@ -1,0 +1,19 @@
+id: "CIS-8.4"
+title: "Enable File Quarantine"
+category: application_security
+severity: high
+description: "File quarantine must be enabled to scan downloaded files."
+rationale: "File quarantine triggers security checks on downloaded files before they can be opened."
+frameworks: ["CIS", "NIST"]
+platforms: ["macOS 14+"]
+probe: file_system
+check:
+    value: "1"
+    op: equals
+    path: "com.apple.downloads LSQuarantine"
+remediation:
+    action: run_command
+    command: "/usr/bin/defaults write com.apple.DownloadAssist LSQuarantine -bool true"
+    sudo: false
+    description: "Enable file quarantine for downloads to trigger malware scanning."
+    rollbackCommand: "/usr/bin/defaults write com.apple.DownloadAssist LSQuarantine -bool false"
