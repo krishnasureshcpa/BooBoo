@@ -49,6 +49,7 @@ logs/
 # Research / planning (not part of source)
 analysis/
 plan/
-privacy-repos/*.dmg
+privacy-repos/
+*.dmg
 .build/
 BooBoo.app/
