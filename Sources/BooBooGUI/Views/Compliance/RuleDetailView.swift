@@ -1,51 +1,41 @@
 import SwiftUI
 import BooBooCore
 
-@MainActor
-class MockRemediation {
-    static let shared = MockRemediation()
-
-    func remediate(_ rule: Rule) async -> Bool {
-        try? await Task.sleep(nanoseconds: 1_500_000_000)
-        return true
-    }
-}
-
 struct RuleDetailView: View {
+    @Environment(AppState.self) private var state
     let rule: Rule
-    @State private var showRemediationAlert = false
-    @State private var isRemediating = false
-    @State private var remediationSucceeded = false
+
+    @State private var showConfirm = false
     @State private var showResult = false
+    @State private var fixSucceeded = false
+    @State private var fixMessage = ""
+
+    private var result: CheckResult? { state.result(for: rule.id) }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: BooSpacing.large) {
                 headerSection
                 infoSection
-                descriptionSection
                 statusSection
+                descriptionSection
                 if rule.remediation != nil {
                     fixButton
+                }
+                if !fixMessage.isEmpty {
+                    fixResultBanner
                 }
             }
             .padding(BooSpacing.xlarge)
         }
         .background(Color.booBackground)
-        .alert("Remediate Rule", isPresented: $showRemediationAlert) {
+        .alert("Apply Fix", isPresented: $showConfirm) {
             Button("Cancel", role: .cancel) { }
-            Button("Apply Fix") {
-                Task { await performRemediation() }
+            Button("Apply") {
+                Task { await performFix() }
             }
         } message: {
-            Text(rule.remediation?.description ?? "Apply the recommended fix for this rule?")
-        }
-        .alert(remediationSucceeded ? "Success" : "Failed", isPresented: $showResult) {
-            Button("OK") { }
-        } message: {
-            Text(remediationSucceeded
-                 ? "Remediation applied successfully."
-                 : "Remediation could not be completed.")
+            Text(rule.remediation?.description ?? "Apply the recommended fix?")
         }
     }
 
@@ -105,6 +95,33 @@ struct RuleDetailView: View {
         )
     }
 
+    private var statusSection: some View {
+        HStack(spacing: BooSpacing.small) {
+            Circle()
+                .fill(result.map { statusColor($0.status) } ?? Color.booTextTertiary)
+                .frame(width: 12, height: 12)
+
+            Text(result.map { statusLabel($0.status) } ?? "Not checked")
+                .font(.booHeadline)
+                .foregroundColor(.booTextPrimary)
+
+            Spacer()
+
+            if let r = result, r.status == .failed {
+                Text(r.message)
+                    .font(.booCaption)
+                    .foregroundColor(.booTextTertiary)
+                    .lineLimit(1)
+            }
+        }
+        .padding(BooSpacing.medium)
+        .background(RoundedRectangle(cornerRadius: BooRadius.card).fill(Color.booBackgroundElevated))
+        .overlay(
+            RoundedRectangle(cornerRadius: BooRadius.card)
+                .stroke((result.map { statusColor($0.status) } ?? Color.booTextTertiary).opacity(0.3), lineWidth: 1)
+        )
+    }
+
     private var descriptionSection: some View {
         VStack(alignment: .leading, spacing: BooSpacing.medium) {
             VStack(alignment: .leading, spacing: BooSpacing.small) {
@@ -129,31 +146,8 @@ struct RuleDetailView: View {
         }
     }
 
-    private var statusSection: some View {
-        HStack(spacing: BooSpacing.small) {
-            Circle()
-                .fill(remediationSucceeded ? Color.booSuccess : Color.booWarning)
-                .frame(width: 12, height: 12)
-
-            Text(remediationSucceeded ? "Remediated" : "Needs Attention")
-                .font(.booHeadline)
-                .foregroundColor(.booTextPrimary)
-
-            Spacer()
-        }
-        .padding(BooSpacing.medium)
-        .background(
-            RoundedRectangle(cornerRadius: BooRadius.card)
-                .fill(Color.booBackgroundElevated)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: BooRadius.card)
-                .stroke(remediationSucceeded ? Color.booSuccess.opacity(0.3) : Color.booWarning.opacity(0.3), lineWidth: 1)
-        )
-    }
-
     private var fixButton: some View {
-        Button(action: { showRemediationAlert = true }) {
+        Button(action: { showConfirm = true }) {
             Label("Fix", systemImage: "wrench.and.screwdriver")
                 .font(.booHeadline)
                 .frame(maxWidth: .infinity)
@@ -161,14 +155,51 @@ struct RuleDetailView: View {
         }
         .buttonStyle(.borderedProminent)
         .tint(.booAccent)
-        .disabled(isRemediating)
+        .disabled(state.isFixing)
+        .keyboardShortcut("f", modifiers: .command)
     }
 
-    private func performRemediation() async {
-        isRemediating = true
-        remediationSucceeded = await MockRemediation.shared.remediate(rule)
-        isRemediating = false
-        showResult = true
+    private var fixResultBanner: some View {
+        HStack(spacing: BooSpacing.small) {
+            Image(systemName: fixSucceeded ? "checkmark.circle.fill" : "xmark.circle.fill")
+                .foregroundColor(fixSucceeded ? .booSuccess : .booDanger)
+            Text(fixMessage.isEmpty ? "Unknown result" : fixMessage)
+                .font(.booCallout)
+                .foregroundColor(.booTextSecondary)
+        }
+        .padding(BooSpacing.medium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: BooRadius.card)
+                .fill((fixSucceeded ? Color.booSuccess : Color.booDanger).opacity(0.1))
+        )
+    }
+
+    @MainActor
+    private func performFix() async {
+        fixSucceeded = await state.fixRule(rule)
+        fixMessage = fixSucceeded
+            ? "Fix applied successfully."
+            : (state.fixResults[rule.id]?.message ?? "Fix could not be completed.")
+    }
+
+    private func statusColor(_ status: CheckStatus) -> Color {
+        switch status {
+        case .passed, .remediated: return .booSuccess
+        case .failed: return .booDanger
+        case .error: return .booWarning
+        case .skipped: return .booTextTertiary
+        }
+    }
+
+    private func statusLabel(_ status: CheckStatus) -> String {
+        switch status {
+        case .passed: return "Passed"
+        case .failed: return "Failed"
+        case .error: return "Error"
+        case .skipped: return "Skipped"
+        case .remediated: return "Remediated"
+        }
     }
 
     private func categoryLabel(for category: RuleCategory) -> String {

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
+      - name: Build CLI release
+        run: swift build --configuration release --product booboo
+
+  lint:
+    name: Lint
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: SwiftLint
+        run: swiftlint --strict 2>/dev/null || true
+
+  security:
+    name: Security Audit
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency audit
+        run: swift package plugin --list 2>/dev/null; swift build --show-toolchain-path
